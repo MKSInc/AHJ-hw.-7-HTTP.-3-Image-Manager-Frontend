@@ -1,0 +1,10 @@
+.btn:hover {
+  cursor: pointer;
+
+  background-color: #efefef;
+  border-color: dimgray;
+}
+
+.btn:active {
+  background-color: #dedede;
+}

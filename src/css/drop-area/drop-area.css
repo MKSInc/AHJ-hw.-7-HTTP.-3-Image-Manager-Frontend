@@ -1,0 +1,39 @@
+.drop-area {
+  position: relative;
+}
+
+.drop-area__layer {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  border-radius: inherit;
+}
+
+.drop-area__layer_bottom {
+  width: 100%;
+  opacity: 0.1;
+}
+
+.drop-area__layer_bottom:focus {
+  outline: none;
+}
+
+.drop-area__layer_upper {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  font-size: 24px;
+
+  background-color: white;
+}
+
+.drop-area__layer_upper:hover {
+  cursor: pointer;
+}

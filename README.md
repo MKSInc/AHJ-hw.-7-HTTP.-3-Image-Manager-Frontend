@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/e0vmqcbi19pwnld2?svg=true)](https://ci.appveyor.com/project/MKSInc/ahj-hw-7-http-3-image-manager-frontend)
 # 7. Домашнее задание к лекции «Работа с HTTP»
 
 Правила сдачи задания:

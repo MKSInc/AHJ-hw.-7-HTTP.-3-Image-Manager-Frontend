@@ -1,0 +1,64 @@
+.image-manager__drop-area {
+  height: 150px;
+  border: 2px solid gray;
+  border-radius: 20px;
+  margin-bottom: 25px;
+}
+
+.image-manager__image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -15px;
+}
+
+.image-manager__image-container {
+  position: relative;
+
+  flex: 0 0 25%;
+  padding: 15px;
+}
+
+.image-manager__image {
+  width: 100%;
+}
+
+.image-manager__image-title {
+  font-style: italic;
+  text-align: center;
+}
+
+.image-manager__btn-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 30px;
+  height: 30px;
+
+  border: 2px solid #999;
+  border-radius: 50%;
+
+  background-color: #f7f7f7;
+  outline: none;
+}
+
+.image-manager__btn-remove::before,
+.image-manager__btn-remove::after {
+  content: '';
+  position: absolute;
+  top: calc(49%);
+  left: 20%;
+  width: 60%;
+  height: 2px;
+
+  background-color: dimgray;
+}
+
+.image-manager__btn-remove::before {
+  transform: rotate(45deg);
+}
+
+.image-manager__btn-remove::after {
+  transform: rotate(-45deg);
+}
+
