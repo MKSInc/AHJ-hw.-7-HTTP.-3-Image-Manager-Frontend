@@ -3,6 +3,8 @@ import imageGalleryHTML from '../html/image-manager.html';
 import HiddenTempEl from './utility';
 import ImageContainer from './ImageContainer';
 import BtnImgRemove from './BtnImgRemove';
+import checkImgFile from './checkImgFile';
+import createRequest from './createRequest';
 
 export default class ImageManager {
   constructor(parentEl) {
@@ -22,8 +24,10 @@ export default class ImageManager {
       imageContainer: '[data-id="image-container"]', // взят из класса ImageContainer
     };
 
+    this.imagesDB = new Map();
+
     this.entity = {
-      btnImgRemove: new BtnImgRemove(),
+      btnImgRemove: new BtnImgRemove(this.imagesDB),
     };
 
     // Контейнер с картинкой, на который в данный момент наведен курсор мыши.
@@ -46,7 +50,7 @@ export default class ImageManager {
     // Отменяем открытие файла в новой вкладке по умолчанию
     this.els.inputOverlap.addEventListener('dragover', (event) => event.preventDefault());
 
-    this.els.inputOverlap.addEventListener('drop', (event) => {
+    this.els.inputOverlap.addEventListener('drop', async (event) => {
       event.preventDefault(); // Отменяем открытие файла в новой вкладке по умолчанию
       this.addImageToGallery(event.dataTransfer.files);
     });
@@ -60,19 +64,63 @@ export default class ImageManager {
     htEl = null;
   }
 
-  onInputFileChange(event) {
-    this.addImageToGallery(event.target.files);
+  addImagesFromDB() {
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const getImagesData = await createRequest({ params: { action: 'getImagesData' } });
+        if (!getImagesData.success) throw new Error(getImagesData.data);
+
+        const { images } = getImagesData.data;
+
+        // Если на сервере нет загруженных картинок, выходим.
+        if (images.length === 0) return;
+
+        for (const image of images) {
+          const imageContainer = new ImageContainer(this.els.imageGallery);
+          imageContainer.init(image);
+          this.imagesDB.set(imageContainer.els.imageContainer, image);
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Не удалось получить изображения с сервера.');
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
+    });
+  }
+
+  async onInputFileChange(event) {
+    await this.addImageToGallery(event.target.files);
     // Очищаем value, чтобы событие onChange реагировало на добавление того же самого файла повторно.
     this.els.inputFile.value = '';
   }
 
-  addImageToGallery(files) {
-    files.forEach((file) => {
-      if (file.type.startsWith('image')) {
-        const imageContainer = new ImageContainer(this.els.imageGallery);
-        imageContainer.init(file);
-      }
-    });
+  async addImageToGallery(files) {
+    const result = checkImgFile(files);
+
+    if (!result.success) {
+      this.els.inputFile.value = '';
+      throw new Error(result.data);
+    }
+
+    // Делаем POST запрос на сервер action=addImage
+    const formData = new FormData();
+    formData.set('action', 'addImage');
+    formData.set('file', result.data);
+
+    try {
+      const addImage = await createRequest({ formData });
+      if (!addImage.success) throw new Error(addImage.data);
+
+      const imageContainer = new ImageContainer(this.els.imageGallery);
+      imageContainer.init(addImage.data);
+      this.imagesDB.set(imageContainer.els.imageContainer, addImage.data);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Не удалось сохранить изображение на сервере.');
+      // eslint-disable-next-line no-console
+      console.error(e);
+    }
   }
 
   onImageGalleryMouseover(event) {

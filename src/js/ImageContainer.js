@@ -17,18 +17,16 @@ export default class ImageContainer {
     };
   }
 
-  init(imageFile) {
+  init({ imageFileName, imageName }) {
     let htEl = new HiddenTempEl(imageContainerHTML).el;
 
     this.els.imageContainer = htEl.querySelector(this.selectors.imageContainer);
 
     this.els.image = this.els.imageContainer.querySelector(this.selectors.image);
-    this.els.image.src = URL.createObjectURL(imageFile);
-    // После загрузки картинки, удаляем blob объект из памяти.
-    this.els.image.addEventListener('load', () => URL.revokeObjectURL(this.els.image.src));
+    this.els.image.src = `img/${imageFileName}`;
 
     this.els.imageTitle = this.els.imageContainer.querySelector(this.selectors.imageTitle);
-    this.els.imageTitle.textContent = imageFile.name;
+    this.els.imageTitle.textContent = imageName;
 
     this.parentEl.append(this.els.imageContainer);
 
